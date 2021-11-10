@@ -1,0 +1,184 @@
+<template>
+  <div ref="chart_ref" class="chart_area"></div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      chart:null,
+      allData :null,
+    }
+  },
+  mounted(){
+    this.initChart()
+  },
+  methods:{
+    initChart(){
+        this.chart = this.$echarts.init(this.$refs.chart_ref,'walden')
+        var option = {
+            // tooltip: {
+            //     trigger: 'axis',
+            //     axisPointer: {
+            //     // Use axis to trigger tooltip
+            //     type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
+            //     }
+            // },
+            legend: {
+                top:'3%',
+                width: '100%', //整个legend width
+                orient: 'horizontal', //朝向 默认 horizontal 水平的 可以设置 vertical
+                left:'3%',
+                itemWidth: 25, //只能设置 px 不能设置百分比  且设置的itemWidth 是个体大小 不包括文字
+                itemStyle:{
+                    // 这个我弄了都没用啊
+                    borderWidth: 10,
+                    // borderType: 'dashed',
+                    borderType: 'solid',
+                    // borderCap:'round'
+                    borderColor:'red',
+                },
+                // textStyle:{
+                //     fontSize: 12,
+                //     borderType : 'solid',
+                //     borderWidth : 1,
+                //     borderColor : 'blue',
+                //     borderRadius: 5,
+                //     overflow : 'truncate'
+                // },
+                icon : 'circle' ,
+                // backgroundColor : 'lightblue',
+                // type: 'scroll',
+                // pageButtonItemGap: 2
+
+            },
+            dataZoom:[{
+                type:"slider",
+                yAxisIndex:0,
+                fliterMode:'fliter',
+                right:'2.5%',
+                backgroundColor:'lightblue'
+            }],
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true,
+                // show:false,
+                // shadowoffsetX:1,
+                // shadowOffsety:1,
+                // shadowBlur:10
+                width: '85%'
+            },
+            xAxis: {
+                type: 'value',
+                // show : false,
+                // position: 'top',
+                axisLine:{
+                    lineStyle:{
+                        // color:'red',
+                    }
+                },
+                splitLine:{
+                    show:false,
+                }
+                // axisTick:{
+                //     show:false,
+                //     lineStyle:{
+                //         color:'red',
+                //     }
+                // }
+            },
+            yAxis: {
+                type: 'category',
+                data: ['Monssssss', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                splitLine:{
+                    show:false,
+                }
+            },
+            series: [
+                {
+                    name: 'Direct',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: [320, 302, 301, 334, 390, 330, 320]
+                },
+                {
+                    name: 'Mail Ad',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: [120, 132, 101, 134, 90, 230, 210]
+                },
+                {
+                    name: 'Affiliate Ad',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: [220, 182, 191, 234, 290, 330, 310]
+                },
+                {
+                    name: 'Video Ad',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: [150, 212, 201, 154, 190, 330, 410]
+                    },
+                {
+                    name: 'Search Engine',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: [820, 832, 901, 934, 1290, 1330, 1320]
+                },
+                {
+                    // name: 'Search Engine',
+                    type: 'line',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: [820, 832, 901, 934, 1290, 1330, 1320]
+                }
+            ]
+            };
+            this.chart.setOption(option)
+        }
+    }
+}
+</script>
+
+<style>
+.chart_area{
+  width: 100%;
+}
+</style>
