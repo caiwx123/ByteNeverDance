@@ -1,0 +1,232 @@
+<template>
+  <div ref="chart_ref" class="chart_area"></div>
+</template>
+
+<script>
+import axios from 'axios'
+export default {
+  data() {
+    return {
+      chart:null,
+      allData :null,
+      addedCitysName:[],
+      oldCityName:'',
+      aadedCitysNumber : 0,
+    }
+  },
+  props:['newCityName'],
+  mounted(){
+    
+    this.initChart()
+    this.getData()
+    document.addEventListener('newCityChange',this.getData())
+  },
+  methods:{
+    async getData(){
+        // 获得数据 注册地图 加点
+        var newCityIndex = this.addedCitysName.indexOf(this.newCityName)
+        var option = {}
+        if(newCityIndex==-1){
+            // 地图没存过 现在去存
+            // 某个get
+            console.log(this.newCityName)
+            console.log(`http://localhost:8080/map/${this.newCityName}.json`)
+            var ret = await axios.get(`http://localhost:8080/map/${this.newCityName}.json`)
+            console.log(ret.data)
+            this.$echarts.registerMap(this.newCityName,ret.data)
+            this.allData = [
+                    [117.27,31.86,'古茗','吉林',1],
+                    [118.37,32.86,'贡茶','甘肃',2],
+                    [116.47,32.56,'沪上阿姨','诺克萨斯',3],
+                    [118.27,32.66,'coco','德玛西亚',4],
+                    [118.57,31.86,'奶茶','比尔吉沃特',5],
+                ]
+            option = {
+                geo:[{
+                    id : this.newCityName,
+                    type: 'map',
+                    map : this.newCityName,
+                    roam:true,  
+                    // center: [115.97, 29.71]
+                    label:{
+                        show:true,
+                        color:'white',
+                    },
+                    itemStyle:{
+                        areaColor : 'rgb(36,54,76)',
+                    },
+                    emphasis:{
+                        itemStyle:{
+                            areaColor: 'rgb(64,87,103)'
+                        }
+                    },
+                    zoom:1.5,
+                }],
+                series:{
+                    id:this.newCityName + 'Scatter',
+                    name:this.newCityName,
+                    coordinateSystem:'geo',
+                    type:'effectScatter',
+                    geoIndex: this.addedCitysNumber,
+                    data:this.allData
+                }
+            }
+            // 多查了一个地图
+            // 主要是series 里面我只知道可以用 geoIndex 来找地图 所以弄个number 来找Index
+            this.addedCitysNumber +=1
+        }
+        else{
+            // 显示地图
+            option = {
+                geo:[{
+                    id: this.newCityName,
+                    show : true
+                }]
+            }
+        }
+        
+        // 将过去的 地图 显示消失掉
+        var oldCityIndex = this.addedCitysName.indexOf(this.oldCityName)
+        if(oldCityIndex!=-1){
+            option.geo.push({
+                id : this.oldCityName,
+                show : false
+            })
+        }
+        this.chart.setOption(option)
+    },
+    initChart(){
+        this.chart = this.$echarts.init(this.$refs.chart_ref,'macarons')
+        var option = {
+        // color: ['#dd4444', '#fec42c', '#80F1BE'],
+            tooltip:{
+                formatter:(param) =>{
+                    var value = param.value
+                    return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' 
+                    + value[2] +'</div>'
+                    + '所在区域: '+ value[3] + '<br>' 
+                    + '人均消费: ￥'+value[4] + '<br>' 
+                }
+            },
+        };
+        this.chart.setOption(option)
+    }
+    // async initChart(){
+    //     this.chart = this.$echarts.init(this.$refs.chart_ref,'macarons')
+    //     var ret = await axios.get('http://localhost:8080/map/anhui.json')
+    //     this.$echarts.registerMap('anhui',ret.data)
+    //     console.log(ret)
+    //     var option = {
+    //     // color: ['#dd4444', '#fec42c', '#80F1BE'],
+    //         tooltip:{
+    //             formatter:(param) =>{
+    //                 var value = param.value
+    //                 return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' 
+    //                 + value[2] +'</div>'
+    //                 + '所在区域: '+ value[3] + '<br>' 
+    //                 + '人均消费: ￥'+value[4] + '<br>' 
+    //             }
+    //         },
+    //         geo:[{
+    //             id : 'anhui',
+    //             type: 'map',
+    //             map : 'anhui',
+    //             roam:true,  
+    //             // center: [115.97, 29.71]
+    //             label:{
+    //                 show:true,
+    //                 color:'white',
+
+    //             },
+    //             itemStyle:{
+    //                 areaColor : 'rgb(36,54,76)',
+    //             },
+    //             emphasis:{
+    //                 itemStyle:{
+    //                     areaColor: 'rgb(64,87,103)'
+    //                 }
+    //             },
+    //             zoom:1.5,
+    //         }]
+    //     };
+    //     this.chart.setOption(option)
+
+        
+
+    //     option ={
+            
+    //         series:{
+    //             id:'anhuiScatter',
+    //             name:'anhuiScatter',
+    //             coordinateSystem:'geo',
+    //             type:'effectScatter',
+    //             geoIndex:0,
+    //             data:[
+    //                 [117.27,31.86,'古茗','吉林',1],
+    //                 [118.37,32.86,'贡茶','甘肃',2],
+    //                 [116.47,32.56,'沪上阿姨','诺克萨斯',3],
+    //                 [118.27,32.66,'coco','德玛西亚',4],
+    //                 [118.57,31.86,'奶茶','比尔吉沃特',5],
+    //             ],
+    //         }
+            
+    //     }
+    //     this.chart.setOption(option)
+
+        
+    //     // 变换城市的时候 通过geo ：id show ：false 来改变城市
+    //     // 因为点是在geo 上的 某个geo 不见了 点也就消失了
+    //     ret = await axios.get('http://localhost:8080/map/china.json')
+    //     this.$echarts.registerMap('china',ret.data)
+
+    //      option = {
+        
+    //         geo:[{
+    //             id : 'china',
+    //             type: 'map',
+    //             map : 'china',
+    //             roam:true,  
+    //             // center: [115.97, 29.71]
+    //             label:{
+    //                 show:true,
+    //                 color:'white',
+    //             },
+    //             itemStyle:{
+    //                 areaColor : 'rgb(36,54,76)',
+    //             },
+    //             emphasis:{
+    //                 itemStyle:{
+    //                     areaColor: 'rgb(64,87,103)'
+    //                 }
+    //             },
+    //             zoom:1.5,
+    //         }],
+    //         series:[{
+    //             id:'chinaScatter',
+    //             name:'chinaScatter',
+    //             coordinateSystem:'geo',
+    //             type:'effectScatter',
+    //             geoIndex:1,
+    //             data:[
+    //                 [117.27,31.86,'古茗','吉林',1],
+    //                 [150.37,32.86,'贡茶','甘肃',2],
+    //                 [130.47,32.56,'沪上阿姨','诺克萨斯',3],
+    //                 [110.27,32.66,'coco','德玛西亚',4],
+    //                 [120.57,31.86,'奶茶','比尔吉沃特',5],
+    //             ],
+    //             itemStyle:{
+    //                 color:'red',
+    //             }
+    //         }]
+    //     };
+    //     this.chart.setOption(option)
+    // }
+}
+}
+</script>
+
+<style>
+.chart_area{
+  width: 100%;
+}
+</style>
