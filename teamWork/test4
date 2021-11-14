@@ -1,0 +1,166 @@
+<template>
+    <div class="charts_container clear-fix">
+      <div class="outHeader"><div class="citySelect">
+          <div class="choose">选择品牌</div>
+          <select class="selectContainer" v-model="selectedName"></select>
+          <div class="next" @click='nextBrand'>下一个</div>
+      </div>
+    </div>
+    <div class="titleWithChart clear-fix">
+        <MyTitle class="title clear-fix" title='品牌店铺分布散点图' subTitle='分布地区取自主要城市'></MyTitle>
+        <BbrandMap class="half_chart clear-fix" :brandName='selectedName'></BbrandMap>
+    </div>
+    
+    <div class="titleWithChart clear-fix">
+        <MyTitle class="title clear-fix" title='人均消费分布' subTitle='品牌店铺人均消费区间数量分布及其统计值'></MyTitle>
+        <BbrandPrice class="half_chart clear-fix" ></BbrandPrice>
+    </div>
+    <div class="titleWithChart clear-fix">
+        <MyTitle class="title clear-fix" title='评分均值分布' subTitle='品牌店铺评分均值区间数量分布及其统计值'></MyTitle>
+        <BbrandScore class="half_chart clear-fix" ></BbrandScore>
+    </div>
+    <div class="titleWithChart clear-fix">
+        <MyTitle class="title clear-fix" title='产品关键词词频统计' subTitle='词云图'></MyTitle>
+        <BbrandWords class="half_chart clear-fix" ></BbrandWords>
+    </div>
+      
+      
+      
+  </div>
+</template>
+
+<script>
+import MyTitle from '../components/MyTitle.vue'
+import BbrandMap from '../components/BbrandMap.vue'
+import BbrandPrice from '../components/BbrandPrice.vue'
+import BbrandScore from '../components/BbrandScore.vue'
+import BbrandWords from '../components/BbrandWords.vue'
+export default {
+    components: { 'BbrandMap':BbrandMap,
+                    'BbrandPrice':BbrandPrice,
+                    'BbrandScore':BbrandScore,
+                    'MyTitle':MyTitle,
+                    'BbrandWords':BbrandWords},
+    data() {
+        return {
+            brandsName:['古茗','沪上阿姨','贡茶','Coco','护肩','拉了','阿是'],
+            selectedName:'古茗',
+            selectedBrandIndex:0,
+        }
+    },
+    watch:{
+        selectedName:{
+            handler(){
+                console.log('名字改了')
+                var event = new CustomEvent("brandChange",{})
+                this.$nextTick(()=>{document.dispatchEvent(event)})
+            }
+        }
+    },
+    methods:{
+        CreateSelect(){
+            var select = document.getElementsByClassName('selectContainer')[0]
+            this.brandsName.forEach((item)=>{
+                var brand = document.createElement('option')
+                brand.setAttribute('value',item)
+                brand.innerText = item
+                select.appendChild(brand)
+
+            })
+        },
+        nextBrand(){
+            this.selectedBrandIndex +=1
+            this.selectedName = this.brandsName[this.selectedCityIndex]
+        }
+        
+    },
+    mounted(){
+        this.CreateSelect()
+        this.selectedName ='古茗'
+    }
+}
+</script>
+
+<style scoped>
+.charts_container{
+    width: 100%;
+    position: relative;
+}
+.titleWithChart{
+    float: left;
+    width: 47%;
+    box-sizing: border-box;
+}
+.title{
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+.half_chart{
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+    height: 400px;
+    margin: 1.5%;
+}
+.big_chart{
+    float: left;
+    width: 47%;
+    box-sizing: border-box;
+    height: 600px;
+    margin: 1.5%;
+}
+.outHeader{
+    text-align: center;
+    margin-bottom: 10px;
+}
+.citySelect{
+    height: 40px;
+    background-color: rgb(59,125,221);
+    line-height: 40px;
+    font-size: 20px;
+    padding: 2px;
+    padding-bottom: 3px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 4px;
+    color: white;
+    display: inline-block;
+}
+.citySelect .choose{
+    display: inline-block;
+    padding : 2px 30px;
+    height: 35px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    line-height: 35px;
+    margin: 2px;
+    text-align: center;
+}
+.citySelect .selectContainer{
+    display: inline-block;
+    padding : 0px 30px;
+    height: 38px;
+    border: none;
+    box-sizing: border-box;
+    vertical-align: middle;
+    line-height: 35px;
+    background: black;
+    color: white;
+    margin: 2px;
+    font-size: 20px;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-align: center;
+}
+.citySelect .next{
+    height: 35px;
+    display: inline-block;
+    padding : 2px 30px;
+    background-color: rgb(24,108,124);
+    vertical-align: middle;
+    line-height: 35px;
+    margin: 2px;
+    cursor: pointer;
+}
+</style>>
