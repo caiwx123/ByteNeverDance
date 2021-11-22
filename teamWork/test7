@@ -1,0 +1,127 @@
+<template>
+  <div class="com-container clear-fix">
+        <div class="left-sidebar" v-show="leftShow" >
+          <div class="catalogue">目录</div>
+          <div>
+              <div class="type_container">
+                  <div class="type_name "><span class="iconfont icon-summary">总结</span><hr></div>
+                  <ul>
+                      <li class="list_item " @click="typeChange('country')"> <router-link to="/Country" :class="activeList.country? 'active': ''" ><span class="iconfont icon-gaiyao">概要</span></router-link></li>
+                      <li class="list_item" @click="typeChange('statistics')"> <router-link to="/Statistics" :class="activeList.statistics? 'active': ''" ><span class="iconfont icon-tongji" >统计</span></router-link></li>
+                  </ul>
+              </div>
+              <div class="type_container">
+                  <div class="type_name"><span class="iconfont icon-grouping">分组</span><hr></div>
+                  <ul>
+                      <li class="list_item" @click="typeChange('citys')"> <router-link to="/Citys" :class="activeList.citys? 'active': ''" ><span class="iconfont icon-chengshi" >城市</span></router-link></li>
+                      <li class="list_item" @click="typeChange('brand')"> <router-link to="/Brand" :class="activeList.brand? 'active': ''" ><span class="iconfont icon-pinpai">品牌</span></router-link></li>
+                  </ul>
+              </div>
+              <div class="type_container">
+                  <div class="type_name"><span class="iconfont icon-qita">其他</span><hr></div>
+                  <ul>
+                      <li class="list_item"  @click="typeChange('feedBack')"> <router-link to="/FeedBack" :class="activeList.feedBack? 'active': ''"><span class="iconfont icon-fankui">反馈信息</span></router-link></li>
+                      <li class="list_item"> <a href=""><span class="iconfont icon-github">GitHub</span></a></li>
+                  </ul>
+              </div>
+
+          </div>
+      </div>
+        <div class="main_container">
+          <div class="top"><span class="iconfont" @click="leftShowChange()" v-html="menuCode"></span><span ></span>奶茶产品市场分析<div class="tip">本数据来自美团</div></div>
+          <div class="shows clear-fix" >
+            <router-view :is_app='is_app'></router-view>
+          </div>
+        </div>
+  </div>
+</template>
+
+<script>
+// console.log(document.body.clientWidth)
+//  document.getElementsByClassName
+  
+  
+// <div class="com-container" id="app">
+//     <!-- 侧边栏 -->
+//     <router-link :to="{
+//       name:'Citys',
+//     }" class="left_banner"></router-link>
+    
+//     <!-- 右边主栏 -->
+//     <div class="main_containner">
+//       <div class="top"></div>
+//       <div class="show_charts clear-fix">
+//         <router-view class=""></router-view>
+//       </div>
+//     </div>
+//   </div>
+export default {
+  name: 'App',
+  data() {
+    return {
+      leftShow:true,
+      activeList:{
+        country:true,
+        statistics:false,
+        citys:false,
+        brand:false,
+        feedBack:false,
+      },
+      is_app:null,
+      activeName : 'country',
+      menuCode:'&#xe612;'
+    }
+  },
+  mounted(){
+    this.is_app = false
+    if(document.body.clientWidth<800){
+    this.is_app = true
+    if(this.is_app){
+      this.leftShow = false
+      this.menuCode = '&#xe788;'
+    }
+  }
+  },
+  methods:{
+    leftShowChange(){
+      this.leftShow = !this.leftShow
+      if(this.menuCode=='&#xe612;')
+      this.menuCode = '&#xe788;'
+      else
+      this.menuCode = '&#xe612;'
+      var event = new CustomEvent("resize",{})
+      this.$nextTick(()=>{window.dispatchEvent(event)})
+    },
+    typeChange(name){
+      this.activeList[this.activeName] = false
+      this.activeName = name
+      this.activeList[this.activeName] = true
+      if(this.is_app){
+        this.$nextTick(this.leftShowChange())
+      }
+    }
+  }
+}
+
+</script>
+
+<style>
+
+canvas {
+    border-radius: 20px;
+}
+
+.main_containner{
+  float: left;
+  display: block;
+  position: relative;
+}
+.tip{
+  font-size: 16px;
+  float: right;
+  top: 20px;
+  right: 30px;
+  color: #2DCBFF ;
+  margin-right: 30px;
+}
+</style>
