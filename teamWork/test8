@@ -1,0 +1,190 @@
+<template>
+  <div ref="chart_ref" class="chart_area"></div>
+</template>
+
+<script>
+import axios from 'axios'
+export default {
+  data() {
+    return {
+      chart:null,
+      allData :null,
+    }
+  },
+  props:['brandName'],
+  mounted(){
+    
+    this.initChart()
+    this.getData()
+    this.allData = null
+    document.addEventListener('brandChange',this.getData)
+    window.addEventListener('resize',this.chart.resize) 
+    document.addEventListener('leftChange',this.chart.resize)
+  },
+  beforeDestroy() {
+      document.removeEventListener('brandChange',this.getData)
+    window.removeEventListener('resize',this.chart.resize) 
+    document.removeEventListener('leftChange',this.chart.resize)
+    this.chart.clear()
+  },
+  methods:{
+    async getData(){
+        // 获得数据 注册地图 加点
+        
+            // 得到某品牌在各城市的分布
+            var ret
+            await this.$http.get(`http://114.55.57.159/api/brand/detail/${this.brandName}`).then((response)=>{
+            ret = response.data.data
+            console.log(response.data)
+            }).catch((error)=>{
+                console.log(error)
+            })
+            
+            this.allData = {
+                data:[],
+                name:null,
+                sumShop:0
+            }
+            var max = 0
+            var min = 0
+            this.allData.sumshop = 0
+            ret.detail.forEach((el)=>{
+                this.allData.data.push([el.longitude,el.latitude,el.city,el.shopnum,el.avgprice])
+                if(el.shopnum>max){
+                    max = el.shopnum
+                }
+                if(el.shopnum<min)
+                {
+                    min = el.shopnum
+                }
+                    
+                this.allData.sumshop+= el.shopnum
+            })
+            max = parseInt(max*0.8)
+            this.allData.name = this.brandName
+            console.log(this.allData.sumshop)
+            // this.allData = {
+            //     data:[
+            //         [110,31,'乌鲁木齐',2,21],
+            //         [120,32,'北京',3,22],
+            //         [130,33,'上海',4,23],
+            //         [140,34,'福州',1,24],
+            //         [120,35,'杭州',400,25]
+            //         ],
+            //     name:'古茗',
+            // }
+            // var sumShop = 0
+            // this.allData.data.forEach(element => {
+            //     sumShop += element[3]
+            // });
+        var option = {
+                visualMap: {
+                id : 'myMap',
+                name : 'myMap',
+                dimension:3,
+                min: min,
+                max: max,
+            },
+                title:{
+                    id:'mytitle',
+                    text : this.allData.name,
+                    textStyle:{
+                        color:'white',
+                        fontSize:27
+                    },
+                    subtext:'店铺数量: '+this.allData.sumshop,
+                    subtextStyle:{
+                        fontSize:15
+                    },
+                    left:'5%',
+                    top:'5%'
+
+                },
+                series:{
+                    id:'Scatter',
+                    coordinateSystem:'geo',
+                    type:'effectScatter',
+                    geoIndex: 0,
+                    data:this.allData.data,
+                },
+                
+            }
+        this.chart.setOption(option)
+        this.chart.resize()
+        
+    },
+    async initChart(){
+        this.chart = this.$echarts.init(this.$refs.chart_ref,'macarons')
+        var ceshi = await axios.get(`./map/china.json`)
+        
+        // var ret = await axios.get(`http://localhost:8080/map/中国.json`)
+        this.$echarts.registerMap('中国',ceshi.data)
+        var option = {
+            geo:[{
+                    id : '中国',
+                    type: 'map',
+                    map : '中国',
+                    roam:true,  
+                    // center: [115.97, 29.71]
+                    label:{
+                        show:false,
+                        color:'white',
+                    },
+                    itemStyle:{
+                        areaColor : 'rgb(36,54,76)',
+                    },
+                    emphasis:{
+                        itemStyle:{
+                            areaColor: 'rgb(64,87,103)',
+                        },
+                    },
+                    zoom:1.30,
+                }],
+            visualMap: {
+                id : 'myMap',
+                name : 'myMap',
+                orient:'horizontal',
+                top:'5%',
+                left:'30%',
+                textStyle:{
+                    color:'white'
+                },
+                dimension:3,
+                min: 0,
+                max: 100,
+                precision: 0,
+                inRange: {
+                    color: [
+                    '#74add1',
+                    // '#abd9e9',
+                    // '#e0f3f8',
+                    '#fdae61',
+                    '#f46d43',
+                    '#d73027',
+                    '#a50026'
+                    ]
+                },
+                text: ['High', 'Low'],
+                calculable: true,
+            },
+            tooltip:{
+                formatter:(param) =>{
+                    var value = param.value
+                    return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">' 
+                    + value[2] +'</div>'
+                    + '店铺数量: '+ value[3] + '<br>' 
+                    + '消费均值: ￥'+value[4] + '<br>' 
+                }
+            },
+        };
+        this.chart.setOption(option)
+    }
+}
+}
+</script>
+
+<style>
+.chart_area{
+  width: 100%;
+}
+</style>
