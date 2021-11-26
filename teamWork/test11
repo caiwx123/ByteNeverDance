@@ -1,0 +1,80 @@
+<template>
+    <div class="charts_container clear-fix">
+        <MyTitle class="title clear-fix" title='评分均值分布' subTitle='品牌店铺评分均值区间数量分布及其统计值'></MyTitle>
+        <ul id="more_ul">
+            <li id="more_li"><a href="" target="top"></a></li>
+        </ul>
+    </div>
+</template>
+
+<script>
+import MyTitle from '../components/MyTitle.vue'
+export default {
+    data() {
+        return {
+            dNames:['minmax_standard_normalize-2-0.7427.html',
+            'minmax_standard_normalize-3-0.8187.html',
+            'minmax_standard_normalize-4-0.7553.html',
+            'minmax_standard_normalize-5-0.7657.html',
+            'minmax_standard_normalize-6-0.7785.html',
+            'minmax_standard-2-0.6781.html',
+            'minmax_standard-3-0.687.html',
+            'minmax_standard-4-0.7104.html',
+            'minmax_standard-5-0.7169.html',
+            'minmax_standard-6-0.7232.html',
+            'minmax-2-0.8919.html',
+            'minmax-3-0.8515.html',
+            'minmax-4-0.7139.html',
+            'minmax-5-0.716.html',
+            'minmax-6-0.7157.html',
+            'normalize-2-0.6813.html',
+            'normalize-3-0.8821.html',
+            'normalize-4-0.8432.html',
+            'normalize-5-0.8403.html',
+            'normalize-6-0.7619.html',
+            'standard_normalize-2-0.7427.html',
+            'standard_normalize-3-0.8187.html',
+            'standard_normalize-4-0.7554.html',
+            'standard_normalize-5-0.7656.html',
+            'standard_normalize-6-0.7785.html',
+            'standard-2-0.6781.html',
+            'standard-3-0.687.html',
+            'standard-4-0.7101.html',
+            'standard-5-0.7169.html',
+            'standard-6-0.7238.html'
+            ],
+            baseUrl : 'http://114.55.57.159/'
+        }
+    },
+    components:{
+        'MyTitle':MyTitle,
+    },
+    mounted(){
+        this.initUL()
+    },
+    methods: {
+      initUL(){
+          var ul = document.getElementById('more_ul')
+          var li = document.getElementById('more_li')
+          this.dNames.forEach((item)=>{
+              var my_li = li.cloneNode(true)
+                my_li.setAttribute('href',this.baseUrl+item)
+                ul.appendChild(my_li)
+                my_li.children[0].innerText = item
+          })
+      }  
+    },
+}
+</script>
+
+<style scoped>
+ul,li{
+    display: block;
+    font-size: 16px;
+    color: #2DCBFF;
+    margin: 5px;
+}
+a:hover{
+    border-bottom: 1px solid #2DCBFF;
+}
+</style>>
